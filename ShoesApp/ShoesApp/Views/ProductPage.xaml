@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:ShoesApp.Models"
+             xmlns:vm="clr-namespace:ShoesApp.ViewModels"
+             x:Class="ShoesApp.ProductPage"
+             Title="Магазин обуви"
+             Shell.BackButtonBehavior="{BackButtonBehavior IsVisible=False}">
+
+    <Shell.TitleView>
+        <Grid ColumnDefinitions="Auto, *, Auto, Auto" VerticalOptions="Center" Margin="0, 0, 15, 0">
+            <Label Grid.Column="0"
+                   Text="Магазин обуви"
+                   FontSize="16"
+                   FontAttributes="Bold"
+                   VerticalOptions="Center"
+                   TextColor="Black"/>
+
+            <BoxView Grid.ColumnSpan="1" BackgroundColor="Transparent"/>
+            <Label Grid.Column="2"
+                   Text="{Binding UserName}"
+                   FontSize="14"
+                   VerticalOptions="Center"
+                   TextColor="#ADD8E6"
+                   Margin="0, 0, 20, 0"/>
+            <Button Grid.Column="3"
+                    Text="Выйти"
+                    Command="{Binding LogoutCommand}"
+                    BackgroundColor="Red"
+                    TextColor="#FFFFFF"
+                    FontSize="14"
+                    Padding="0"
+                    WidthRequest="60"
+                    HeightRequest="35"
+                    VerticalOptions="Center"/>
+        </Grid>
+    </Shell.TitleView>
+
+    <Grid RowDefinitions="Auto, Auto, *" ColumnDefinitions="Auto, *" BackgroundColor="#F5F5F5">
+        <CollectionView Grid.Row="2" Grid.ColumnSpan="2" ItemsSource="{Binding Products}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border Margin="10,5" Padding="5" Stroke="Black" StrokeThickness="1" BackgroundColor="#FFFFFF">
+                        <Border.Triggers>
+                            <DataTrigger TargetType="Border" Binding="{Binding IsOutOfStock}" Value="True">
+                                <Setter Property="BackgroundColor" Value="#ADD8E6"/>
+                            </DataTrigger>
+                            <DataTrigger TargetType="Border" Binding="{Binding IsHighDiscount}" Value="True">
+                                <Setter Property="BackgroundColor" Value="#2E8B57"/>
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <Grid ColumnDefinitions="140, *, 110">
+                            <Border Grid.Column="0" Stroke="Black" StrokeThickness="1" Margin="2" Padding="5" BackgroundColor="#FFFFFF">
+                                <Image Grid.Column="0"
+                                        Source="{Binding Photo}"
+                                        WidthRequest="110"
+                                        HeightRequest="110"
+                                        Aspect="AspectFill"/>
+                               
+                            </Border>
+                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2" Margin="10">
+                                <HorizontalStackLayout Spacing="5">
+                                    <Label Text="{Binding Category.CategoryName}" FontAttributes="Bold" FontSize="14" />
+                                    <Label Text="|" FontAttributes="Bold" FontSize="14" />
+                                    <Label Text="{Binding Title}" FontAttributes="Bold" FontSize="14" />
+                                </HorizontalStackLayout>
+                                <Label Text="{Binding Description, StringFormat='Описание товара: {0}'}" FontSize="13" MaxLines="2"/>
+                                <Label Text="{Binding Manufacturer.ManufacturerName, StringFormat='Производитель: {0}'}" FontSize="13"/>
+                                <Label Text="{Binding Supplier.Supliername, StringFormat='Поставщик: {0}'}" FontSize="13"/>
+                                <HorizontalStackLayout Spacing="5" Margin="0, 2, 0, 0">
+                                    <Label Text="Цена: " FontSize="13"/>
+                                    <Label Text="{Binding Price, StringFormat='{0:F2} руб.'}"
+                                           FontAttributes="Bold" FontSize="13"
+                                           IsVisible="{Binding HasNoDiscount}"/>
+                                    <Label Text="{Binding Price, StringFormat='{0:F2} руб.'}"
+                                           TextColor="Red" TextDecorations="Strikethrough" FontSize="13"
+                                           IsVisible="{Binding HasDiscount}"/>
+                                    <Label Text="{Binding PriceWithDiscount, StringFormat='{0:F2} руб.'}"
+                                           FontAttributes="Bold" FontSize="13"
+                                           IsVisible="{Binding HasDiscount}"/>
+                                </HorizontalStackLayout>
+                                <Label Text="{Binding Unit, StringFormat='Единица измерения: {0}'}" FontSize="13" />
+                                <Label Text="{Binding StockQuantity, StringFormat='{0}%'}" FontSize="13"/>
+                            </VerticalStackLayout>
+                            <Border Grid.Column="2" Stroke="Black" StrokeThickness="1" Margin="2" BackgroundColor="#FFFFFF">
+                                <Grid RowDefinitions="*, Auto">
+                                    <VerticalStackLayout Grid.Row="0" VerticalOptions="Center" HorizontalOptions="Center" Spacing="3" Margin="0,5">
+                                        <Label Text="Скидка:" FontSize="12" HorizontalOptions="Center"/>
+                                        <Label Text="{Binding Discount, StringFormat='{0}%'}" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center"/>
+                                    </VerticalStackLayout>
+                                    <Button Grid.Row="1"
+                                            Text="Удалить"
+                                            FontSize="11"
+                                            BackgroundColor="#FF4D4D"
+                                            TextColor="White"
+                                            FontAttributes="Bold"
+                                            HeightRequest="32"
+                                            CornerRadius="0"
+                                            Margin="2,2,2,4"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProductViewModel}}, Path=DeleteProductCommand}"/>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ShoesApp.AuthPage"
+             Title="Авторизация"
+             BackgroundColor="#FFFFFF">
+
+    <VerticalStackLayout Spacing="15" Padding="30" VerticalOptions="Center">
+        <Label Text="Авторизация"
+               HorizontalOptions="Center"
+               FontSize="50"
+               FontAttributes="Bold"
+               Padding="30"
+               TextColor="Black"/>
+        
+        <Entry Text="{Binding Login}" 
+               Placeholder="Логин" 
+               HorizontalOptions="Center" 
+               WidthRequest="200"/>
+
+        <Entry Text="{Binding Password}" 
+               Placeholder="Пароль" 
+               IsPassword="True" 
+               HorizontalOptions="Center" 
+               WidthRequest="200" />
+
+        <Button Text="Войти" 
+                Command="{Binding LoginCommand}" 
+                BackgroundColor="#00FA9A" 
+                TextColor="Black" 
+                HorizontalOptions="Center"
+                WidthRequest="150"/>
+        
+        <Button Text="Войти как гость" 
+                Command="{Binding LoginAsGuestCommand}" 
+                BackgroundColor="#7FFF00" 
+                TextColor="Black"
+                HorizontalOptions="Center" 
+                WidthRequest="150"/>
+    </VerticalStackLayout>
+</ContentPage>

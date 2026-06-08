@@ -1,0 +1,21 @@
+﻿<?xml version = "1.0" encoding = "UTF-8" ?>
+<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:ShoesApp"
+             x:Class="ShoesApp.App">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <ResourceDictionary>
+                <!-- Заданная цветовая палитра -->
+                <Color x:Key="MainBackground">#FFFFFF</Color>
+                <Color x:Key="AdditionalBackground">#7FFF00</Color>
+                <Color x:Key="AccentColor">#00FA9A</Color>
+                <Color x:Key="HighDiscountBackground">#2E8B57</Color>
+            </ResourceDictionary>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
