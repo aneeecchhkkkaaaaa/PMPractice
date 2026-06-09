@@ -16,7 +16,7 @@ namespace ShoesApp.ViewModels
     {
         private readonly DbService _dbService = new DbService();
         private User _receivedUser;
-        private string _userName = "Гость";
+        private string _userFIO = "Гость";
 
 
         public User ReceivedUser
@@ -25,16 +25,16 @@ namespace ShoesApp.ViewModels
             set
             {
                 _receivedUser = value;
-                UserName = _receivedUser?.FirstName ?? "Гость";
+                UserFIO = $"{_receivedUser?.LastName} {_receivedUser?.FirstName} {_receivedUser?.Patronymic}" ?? "Гость";
                 OnPropertyChanged();
             }
         }
 
         // Привязка для имени пользователя в TitleView
-        public string UserName
+        public string UserFIO
         {
-            get => _userName;
-            set { _userName = value; OnPropertyChanged(); }
+            get => _userFIO;
+            set { _userFIO = value; OnPropertyChanged(); }
         }
 
         // Коллекция оберток для CollectionView (верстка будет брать данные отсюда)
@@ -131,11 +131,19 @@ namespace ShoesApp.ViewModels
             {
                 if (string.IsNullOrEmpty(OriginalProduct.Photo))
                     return ImageSource.FromFile("picture.png");
-                string baseUrl = "https://localhost:7053";
-                string fullUrl = $"{baseUrl}/Images/{OriginalProduct.Photo}";
-                return ImageSource.FromUri(new Uri(fullUrl));
+
+                string fullUrl = OriginalProduct.Photo;
+                try
+                {
+                    return ImageSource.FromUri(new Uri(fullUrl));
+                }
+                catch
+                {
+                    return ImageSource.FromFile("picture.png");
+                }
             }
         }
+
         // Маппинг связанных сущностей
         public CategoryWrapper Category => new CategoryWrapper { CategoryName = OriginalProduct.Category };
         public Manufacturer Manufacturer => OriginalProduct.Manufacturer;

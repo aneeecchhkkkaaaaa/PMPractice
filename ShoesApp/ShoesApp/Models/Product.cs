@@ -30,7 +30,7 @@ public partial class Product
         get 
         {
             if (_photo != null)
-                return $"http://localhost:5134/images{_photo}";
+                return $"http://localhost:5134/images/{_photo.TrimStart('/')}";
             else
                 return null;
         } 

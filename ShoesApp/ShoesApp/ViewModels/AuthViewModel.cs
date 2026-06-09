@@ -42,14 +42,16 @@ namespace ShoesApp.ViewModels
                 {
                     { "CurrentUser", user } 
                 };
-                _login = string.Empty;
-                _password = string.Empty;
+                Login = string.Empty;
+                Password = string.Empty;
+                OnPropertyChanged();
                 await Shell.Current.GoToAsync(nameof(ProductPage), navigationParameter);
             }
         }
         public async void LoginAsGuest() {
-            _login = string.Empty;
-            _password = string.Empty;
+            Login = string.Empty;
+            Password = string.Empty;
+            OnPropertyChanged();
             await Shell.Current.GoToAsync(nameof(ProductPage));
         }
 

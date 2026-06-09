@@ -18,7 +18,7 @@
 
             <BoxView Grid.ColumnSpan="1" BackgroundColor="Transparent"/>
             <Label Grid.Column="2"
-                   Text="{Binding UserName}"
+                   Text="{Binding UserFIO}"
                    FontSize="14"
                    VerticalOptions="Center"
                    TextColor="#ADD8E6"
