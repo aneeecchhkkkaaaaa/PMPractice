@@ -14,17 +14,19 @@ namespace ShoesApp.Infrastructures
 
         string url = "http://localhost:5134";
 
-        public async Task<User> GetUser(string login, string password)
+        public async Task<User?> GetUser(string login, string password)
         {
-            var response = await _client.GetAsync(url + $"/api/Auth?login={login}&password={password}");
+            var payload = new { Login = login, Password = password };
+            var response = await _client.PostAsJsonAsync(url + "/api/Auth", payload);
+            if (!response.IsSuccessStatusCode)
+                return null;
             return await response.Content.ReadFromJsonAsync<User>() ?? new();
         }
 
         public async Task<List<Product>> GetProducts()
         {
             try
-            {
-                // Стучимся на /api/Product (как в вашем контроллере) и ждем массив объектов в ответ
+            { 
                 var response = await _client.GetAsync(url + "/api/Product");
 
                 if (response.IsSuccessStatusCode)

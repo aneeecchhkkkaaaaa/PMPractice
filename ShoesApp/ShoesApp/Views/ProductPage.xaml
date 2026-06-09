@@ -52,7 +52,7 @@
                         <Grid ColumnDefinitions="140, *, 110">
                             <Border Grid.Column="0" Stroke="Black" StrokeThickness="1" Margin="2" Padding="5" BackgroundColor="#FFFFFF">
                                 <Image Grid.Column="0"
-                                        Source="{Binding Photo}"
+                                        Source="{Binding Photo, TargetNullValue='picture.png'}"
                                         WidthRequest="110"
                                         HeightRequest="110"
                                         Aspect="AspectFill"/>

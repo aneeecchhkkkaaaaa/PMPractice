@@ -12,21 +12,21 @@ namespace ShoesApi.Controllers
     public class AuthController : ControllerBase
     {
         private readonly Is25AndreevShoesContext _context;
+        private object? dto;
 
         public AuthController(Is25AndreevShoesContext context)
         {
             _context = context;
         }
 
-        [HttpGet]
+        [HttpPost]
         public async Task<ActionResult<User>> Autorization(
-            [FromQuery] string login,
-            [FromQuery] string password
-            )
-        {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Login == login);
+            [FromBody] LoginDto dto)
 
-            if (user == null || user.Password != password)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Login == dto.Login);
+
+            if (user == null || user.Password != dto.Password)
             {
                 return NotFound();
             }
