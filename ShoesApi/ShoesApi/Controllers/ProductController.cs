@@ -11,9 +11,9 @@ namespace ShoesApi.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
-        private readonly Is25AndreevShoesContext _context;
+        private readonly is25_practice_shoesContext _context;
 
-        public ProductController(Is25AndreevShoesContext context)
+        public ProductController(is25_practice_shoesContext context)
         {
             _context = context;
         }

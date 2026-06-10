@@ -12,7 +12,7 @@ namespace ShoesApi
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
             // Add services to the container.
-            builder.Services.AddDbContext<Is25AndreevShoesContext>(options => options.UseNpgsql(connectionString));
+            builder.Services.AddDbContext<is25_practice_shoesContext>(options => options.UseNpgsql(connectionString));
             builder.Services.AddControllers().AddJsonOptions(o =>
             {
                 o.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;

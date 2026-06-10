@@ -11,9 +11,9 @@ namespace ShoesApi.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-        private readonly Is25AndreevShoesContext _context;
+        private readonly is25_practice_shoesContext _context;
 
-        public AuthController(Is25AndreevShoesContext context)
+        public AuthController(is25_practice_shoesContext context)
         {
             _context = context;
         }

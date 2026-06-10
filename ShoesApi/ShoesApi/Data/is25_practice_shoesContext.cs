@@ -5,13 +5,13 @@ using ShoesApi.Models;
 
 namespace ShoesApi.Data;
 
-public partial class Is25AndreevShoesContext : DbContext
+public partial class is25_practice_shoesContext : DbContext
 {
-    public Is25AndreevShoesContext()
+    public is25_practice_shoesContext()
     {
     }
 
-    public Is25AndreevShoesContext(DbContextOptions<Is25AndreevShoesContext> options)
+    public is25_practice_shoesContext(DbContextOptions<is25_practice_shoesContext> options)
         : base(options)
     {
     }
