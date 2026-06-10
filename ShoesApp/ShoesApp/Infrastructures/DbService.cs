@@ -23,11 +23,11 @@ namespace ShoesApp.Infrastructures
             return await response.Content.ReadFromJsonAsync<User>() ?? new();
         }
 
-        public async Task<List<Product>> GetProducts()
+        public async Task<List<Product>> GetProducts(string searchTerm, bool sortCount)
         {
             try
-            { 
-                var response = await _client.GetAsync(url + "/api/Product");
+            {
+                var response = await _client.GetAsync(url + $"/api/Products?sortCount={sortCount}&searchTerm={searchTerm}");
 
                 if (response.IsSuccessStatusCode)
                 {

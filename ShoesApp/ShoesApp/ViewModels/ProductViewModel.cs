@@ -17,6 +17,47 @@ namespace ShoesApp.ViewModels
         private readonly DbService _dbService = new DbService();
         private User _receivedUser;
         private string _userFIO = "Гость";
+        private string _searchTerm = string.Empty;
+        private bool _isSortAsc;
+        private bool _isSortDesc;
+
+        public bool IsSortAsc
+        {
+            get => _isSortAsc;
+            set
+            {
+                if (_isSortAsc != value)
+                {
+                    _isSortAsc = value;
+                    if (value)
+                    {
+                        _isSortDesc = false;
+                        OnPropertyChanged(nameof(IsSortDesc));
+                    }
+                    OnPropertyChanged();
+                    LoadProductsAsync();
+                }
+            }
+        }
+
+        public bool IsSortDesc
+        {
+            get => _isSortDesc;
+            set
+            {
+                if (_isSortDesc != value)
+                {
+                    _isSortDesc = value;
+                    if (value)
+                    {
+                        _isSortAsc = false;
+                        OnPropertyChanged(nameof(IsSortAsc));
+                    }
+                    OnPropertyChanged();
+                    LoadProductsAsync(); 
+                }
+            }
+        }
 
 
         public User ReceivedUser
@@ -49,7 +90,7 @@ namespace ShoesApp.ViewModels
             LogoutCommand = new Command(OnLogout);
             DeleteProductCommand = new Command<ProductItemViewModel>(async (item) => await OnDeleteProduct(item));
 
-            // Запуск загрузки данных при старте
+            // Загрузка данных при старте
             _ = LoadProductsAsync();
         }
 
@@ -59,8 +100,12 @@ namespace ShoesApp.ViewModels
             {
                 Products.Clear();
 
-                // Вызываем обновленный метод, который теперь отдает List<Product>
-                List<Product> originalProducts = await _dbService.GetProducts();
+                bool sortAscending = IsSortAsc;
+
+                if (IsSortDesc)
+                    sortAscending = false;
+
+                List<Product> originalProducts = await _dbService.GetProducts(_searchTerm, sortAscending);
 
                 foreach (var product in originalProducts)
                 {
@@ -108,11 +153,6 @@ namespace ShoesApp.ViewModels
         protected void OnPropertyChanged([CallerMemberName] string? name = null) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
-    
-
-    /// <summary>
-    /// Класс-адаптер. Связывает оригинальный Product со свойствами из вашей XAML-верстки
-    /// </summary>
     internal class ProductItemViewModel
     {
         public Product OriginalProduct { get; }
@@ -120,7 +160,6 @@ namespace ShoesApp.ViewModels
         // Маппинг базовых свойств под имена из XAML
         public string Title => OriginalProduct.ProductName;
         public string Description => OriginalProduct.Description;
-        public ImageSource PhotoUrl => ImageSource.FromUri(new Uri($"https://localhost:7053/Images/{OriginalProduct.Photo}"));
         public decimal Price => OriginalProduct.Price;
         public int StockQuantity => OriginalProduct.InWarehouse;
         public string Unit => OriginalProduct.UnitOfMeasurement;
@@ -148,9 +187,7 @@ namespace ShoesApp.ViewModels
         public CategoryWrapper Category => new CategoryWrapper { CategoryName = OriginalProduct.Category };
         public Manufacturer Manufacturer => OriginalProduct.Manufacturer;
         public SupplierWrapper Supplier => new SupplierWrapper { Supliername = OriginalProduct.Supplier?.SupplierName ?? "Не указан" };
-
-        // Логика скидок (Вы можете заменить эти формулы на ваши реальные данные из БД)
-        public int Discount => OriginalProduct.Current; // Предполагаем, что текущая скидка хранится в Current
+        public int Discount => OriginalProduct.Current;
         public bool HasDiscount => Discount > 0;
         public bool HasNoDiscount => Discount == 0;
         public decimal PriceWithDiscount => HasDiscount ? Price * (1 - (decimal)Discount / 100) : Price;

@@ -11,12 +11,7 @@ namespace ShoesApi.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-<<<<<<< HEAD
         private readonly is25_practice_shoesContext _context;
-=======
-        private readonly Is25AndreevShoesContext _context;
-        private object? dto;
->>>>>>> 4d5bc66886331d9f10f31ef3b829f2900897090f
 
         public AuthController(is25_practice_shoesContext context)
         {
