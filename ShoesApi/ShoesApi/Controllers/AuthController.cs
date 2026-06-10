@@ -11,22 +11,26 @@ namespace ShoesApi.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
+<<<<<<< HEAD
         private readonly is25_practice_shoesContext _context;
+=======
+        private readonly Is25AndreevShoesContext _context;
+        private object? dto;
+>>>>>>> 4d5bc66886331d9f10f31ef3b829f2900897090f
 
         public AuthController(is25_practice_shoesContext context)
         {
             _context = context;
         }
 
-        [HttpGet]
+        [HttpPost]
         public async Task<ActionResult<User>> Autorization(
-            [FromQuery] string login,
-            [FromQuery] string password
-            )
-        {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Login == login);
+            [FromBody] LoginDto dto)
 
-            if (user == null || user.Password != password)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Login == dto.Login);
+
+            if (user == null || user.Password != dto.Password)
             {
                 return NotFound();
             }

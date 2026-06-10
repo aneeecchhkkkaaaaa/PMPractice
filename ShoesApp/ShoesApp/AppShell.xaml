@@ -7,7 +7,6 @@
     Title="ShoesApp"
     FlyoutBehavior="Disabled">  <!-- Отключение бургер-меню -->
 
-    <!-- Стартовая страница по умолчанию AuthPage -->
     <ShellContent
         Title="Авторизация"
         ContentTemplate="{DataTemplate local:AuthPage}"
