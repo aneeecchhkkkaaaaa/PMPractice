@@ -23,7 +23,9 @@ namespace ShoesApi.Controllers
             [FromBody] LoginDto dto)
 
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Login == dto.Login);
+            var user = await _context.Users
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(u => u.Login == dto.Login);
 
             if (user == null || user.Password != dto.Password)
             {

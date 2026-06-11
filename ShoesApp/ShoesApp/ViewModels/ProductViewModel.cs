@@ -14,12 +14,16 @@ namespace ShoesApp.ViewModels
     [QueryProperty(nameof(ReceivedUser), "CurrentUser")]
     internal class ProductViewModel : INotifyPropertyChanged
     {
+        // Инициализация полей
         private readonly DbService _dbService = new DbService();
-        private User _receivedUser;
+        private User? _receivedUser;
         private string _userFIO = "Гость";
         private string _searchTerm = string.Empty;
         private bool _isSortAsc;
         private bool _isSortDesc;
+        //private string _userRole = "Гость";  // На возможный функционал
+        private bool _isMeneger = false;
+        private bool _isAdministrator = false;
 
         public bool IsSortAsc
         {
@@ -38,6 +42,11 @@ namespace ShoesApp.ViewModels
                     LoadProductsAsync();
                 }
             }
+        }
+
+        public bool SearchVisible
+        {
+            get => (_isMeneger || _isAdministrator);
         }
 
         public bool IsSortDesc
@@ -59,7 +68,17 @@ namespace ShoesApp.ViewModels
             }
         }
 
-
+        public string SearchTerm 
+        {
+            get => _searchTerm;
+            set
+            {
+                _searchTerm = value;
+                OnPropertyChanged();
+            }
+        }
+        
+        // Установка данных пользователя
         public User ReceivedUser
         {
             get => _receivedUser;
@@ -67,9 +86,22 @@ namespace ShoesApp.ViewModels
             {
                 _receivedUser = value;
                 UserFIO = $"{_receivedUser?.LastName} {_receivedUser?.FirstName} {_receivedUser?.Patronymic}" ?? "Гость";
-                OnPropertyChanged();
+                //_userRole = _receivedUser.Role?.RolesName; // На возможный функционал
+                if (_receivedUser != null)
+                {
+                    switch (_receivedUser.RoleId)
+                    {
+                        case 1: _isAdministrator = true; _isMeneger = false; break;
+                        case 2: _isMeneger = true; _isAdministrator = false; break;
+                        default: _isAdministrator = false; _isMeneger = false; break;
+                    }
+                    OnPropertyChanged();
+                }
+                OnPropertyChanged(nameof(SearchVisible));
             }
         }
+
+        
 
         // Привязка для имени пользователя в TitleView
         public string UserFIO
@@ -77,6 +109,7 @@ namespace ShoesApp.ViewModels
             get => _userFIO;
             set { _userFIO = value; OnPropertyChanged(); }
         }
+
 
         // Коллекция оберток для CollectionView (верстка будет брать данные отсюда)
         public ObservableCollection<ProductItemViewModel> Products { get; set; } = new ObservableCollection<ProductItemViewModel>();
