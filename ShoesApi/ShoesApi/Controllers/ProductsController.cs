@@ -20,13 +20,20 @@ namespace ShoesApi.Controllers
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> GetProducts(
-            [FromQuery] bool sortCount,
-            [FromQuery] string? searchTerm = null)
+                [FromQuery] bool sortCount,
+                [FromQuery] string? searchTerm = null,
+                [FromQuery] int? selectSupplierID = null)
         {
             var query = _context.Products
                 .Include(p => p.Manufacturer)
                 .Include(p => p.Supplier)
                 .AsQueryable();
+
+            if (selectSupplierID.HasValue)
+            {
+                query = query.Where(p => p.SupplierId == selectSupplierID.Value);
+            }
+
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
                 var words = searchTerm.Split(' ', StringSplitOptions.RemoveEmptyEntries);
@@ -34,21 +41,21 @@ namespace ShoesApi.Controllers
                 {
                     var s = word.ToLower();
                     query = query.Where(p =>
-                    (p.ProductName.ToLower().Contains(s)) ||
-                    (p.Description.ToLower().Contains(s)) ||
-                    (p.Category.ToLower().Contains(s)) ||
-                    (p.Manufacturer.ManufacturerName.ToLower().Contains(s)) ||
-                    (p.Supplier.SupplierName.ToLower().Contains(s)) ||
-                    (p.UnitOfMeasurement.ToLower().Contains(s)));
+                        p.ProductName.ToLower().Contains(s) ||
+                        (p.Description != null && p.Description.ToLower().Contains(s)) ||
+                        p.Category.ToLower().Contains(s) ||
+                        p.Manufacturer.ManufacturerName.ToLower().Contains(s) ||
+                        p.Supplier.SupplierName.ToLower().Contains(s) ||
+                        p.UnitOfMeasurement.ToLower().Contains(s));
                 }
             }
+
             if (sortCount)
-            {
                 return await query.OrderBy(p => p.InWarehouse).ToListAsync();
-            }
-            else return await query.OrderByDescending(p => p.InWarehouse).ToListAsync();
+            else
+                return await query.OrderByDescending(p => p.InWarehouse).ToListAsync();
         }
 
-        
+
     }
 }

@@ -42,5 +42,31 @@ namespace ShoesApp.Infrastructures
             }
         }
 
+        public async Task<List<Supplier>> GetSuppliers()
+        {
+            var response = await _client.GetAsync(url + "/api/Suppliers");
+            if (response.IsSuccessStatusCode)
+                return await response.Content.ReadFromJsonAsync<List<Supplier>>() ?? new();
+            return new();
+        }
+
+        public async Task<List<Product>> GetProducts(string searchTerm, bool sortCount, int? supplierId = null)
+        {
+            try
+            {
+                var urlParams = $"/api/Products?sortCount={sortCount}&searchTerm={Uri.EscapeDataString(searchTerm ?? "")}";
+                if (supplierId.HasValue)
+                    urlParams += $"&selectSupplierID={supplierId.Value}";
+
+                var response = await _client.GetAsync(url + urlParams);
+                if (response.IsSuccessStatusCode)
+                    return await response.Content.ReadFromJsonAsync<List<Product>>() ?? new();
+                return new();
+            }
+            catch
+            {
+                return new();
+            }
+        }
     }
 }
