@@ -69,14 +69,14 @@ namespace ShoesApp.Infrastructures
                 return new();
             }
         }
-        public async Task<List<Manufacturer>> GetManufacturers() // Получение списка производителей
+        public async Task<List<Manufacturer>> GetManufacturers() 
         {
             var response = await _client.GetAsync(url + "/api/Manufacturers");
             if (response.IsSuccessStatusCode)
                 return await response.Content.ReadFromJsonAsync<List<Manufacturer>>() ?? new();
             return new();
         }
-        public async Task<bool> CreateProductAsync(Product product, FileResult? selectedImage) // Создание товара с изображением
+        public async Task<bool> CreateProductAsync(Product product, FileResult? selectedImage) 
         {
             try
             {
@@ -112,7 +112,7 @@ namespace ShoesApp.Infrastructures
                 return false;
             }
         }
-        public async Task<bool> UpdateProductAsync(Product product, FileResult? selectedImage) // Обновление товара
+        public async Task<bool> UpdateProductAsync(Product product, FileResult? selectedImage)
         {
             try
             {
@@ -148,7 +148,7 @@ namespace ShoesApp.Infrastructures
                 return false;
             }
         }
-        public async Task<(bool success, string error)> DeleteProductAsync(string productId) // Удаление товара
+        public async Task<(bool success, string error)> DeleteProductAsync(string productId) 
         {
             try
             {

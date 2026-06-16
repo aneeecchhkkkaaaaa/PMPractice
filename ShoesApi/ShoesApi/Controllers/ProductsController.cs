@@ -51,6 +51,8 @@ namespace ShoesApi.Controllers
                 }
             }
 
+            query = query.Distinct();
+
             if (sortCount)
                 return await query.OrderBy(p => p.InWarehouse).ToListAsync();
             else
@@ -84,7 +86,7 @@ namespace ShoesApi.Controllers
                         return BadRequest("Неподдерживаемый формат изображения");
 
                     string fileName = $"{Guid.NewGuid()}{ext}";
-                    string uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "Images", fileName);
+                    string uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", fileName);
                     using (var stream = new FileStream(uploadPath, FileMode.Create))
                     {
                         await image.CopyToAsync(stream);
@@ -143,7 +145,7 @@ namespace ShoesApi.Controllers
                     // Удаляем старое фото
                     if (!string.IsNullOrEmpty(existing.Photo))
                     {
-                        string oldPath = Path.Combine(Directory.GetCurrentDirectory(), "Images", existing.Photo);
+                        string oldPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images", existing.Photo);
                     }
 
                     // Проверка расширения
@@ -153,7 +155,7 @@ namespace ShoesApi.Controllers
                         return BadRequest("Неподдерживаемый формат изображения");
 
                     string fileName = $"{Guid.NewGuid()}{ext}";
-                    string uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "Images", fileName);
+                    string uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images", fileName);
                     using (var stream = new FileStream(uploadPath, FileMode.Create))
                     {
                         await image.CopyToAsync(stream);
@@ -183,7 +185,7 @@ namespace ShoesApi.Controllers
             // Удаляем файл изображения
             if (!string.IsNullOrEmpty(product.Photo))
             {
-                string path = Path.Combine(Directory.GetCurrentDirectory(), "Images", product.Photo);
+                string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", product.Photo);
             }
 
             _context.Products.Remove(product);

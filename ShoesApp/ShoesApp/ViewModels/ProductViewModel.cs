@@ -72,7 +72,7 @@ namespace ShoesApp.ViewModels
                 {
                     _selectedSupplierId = value;
                     OnPropertyChanged();
-                    _ = LoadProductsAsync();
+                    //_ = LoadProductsAsync();
                 }
             }
         }
