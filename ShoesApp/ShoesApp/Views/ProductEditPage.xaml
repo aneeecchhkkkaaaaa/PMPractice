@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ShoesApp.ProductEditPage"
+             Title="{Binding Title}"
+             BackgroundColor="#F5F5F5"
+             Shell.BackButtonBehavior="{BackButtonBehavior IsVisible=True}">
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="15" Padding="20">
+
+            <!-- Фото товара -->
+            <Border Stroke="Black" StrokeThickness="1" Padding="10" BackgroundColor="White">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Фото товара" FontAttributes="Bold"/>
+                    <Image Source="{Binding ImagePreview, TargetNullValue='picture.png'}"
+                           WidthRequest="300" HeightRequest="200" Aspect="AspectFill"
+                           HorizontalOptions="Center"/>
+                    <Button Text="Выбрать изображение"
+                            Command="{Binding PickImageCommand}"
+                            BackgroundColor="#00FA9A" TextColor="Black"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Наименование товара -->
+            <Border Stroke="Black" StrokeThickness="1" Padding="10" BackgroundColor="White">
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Наименование товара" FontAttributes="Bold"/>
+                    <Entry Text="{Binding Product.ProductName}" Placeholder="Введите название"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Категория (выпадающий список) -->
+            <Border Stroke="Black" StrokeThickness="1" Padding="10" BackgroundColor="White">
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Категория" FontAttributes="Bold"/>
+                    <Picker ItemsSource="{Binding Categories}"
+                            SelectedItem="{Binding Product.Category}"
+                            Title="Выберите категорию"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Описание товара -->
+            <Border Stroke="Black" StrokeThickness="1" Padding="10" BackgroundColor="White">
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Описание" FontAttributes="Bold"/>
+                    <Editor Text="{Binding Product.Description}" HeightRequest="100"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Производитель -->
+            <Border Stroke="Black" StrokeThickness="1" Padding="10" BackgroundColor="White">
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Производитель" FontAttributes="Bold"/>
+                    <Picker ItemsSource="{Binding Manufacturers}"
+                ItemDisplayBinding="{Binding ManufacturerName}"
+                SelectedItem="{Binding SelectedManufacturer}"
+                Title="Выберите производителя"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Поставщик -->
+            <Border Stroke="Black" StrokeThickness="1" Padding="10" BackgroundColor="White">
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Поставщик" FontAttributes="Bold"/>
+                    <Picker ItemsSource="{Binding Suppliers}"
+                ItemDisplayBinding="{Binding SupplierName}"
+                SelectedItem="{Binding SelectedSupplier}"
+                Title="Выберите поставщика"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Цена и единица измерения -->
+            <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
+                <Border Grid.Column="0" Stroke="Black" StrokeThickness="1" Padding="10" BackgroundColor="White">
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Цена (руб)" FontAttributes="Bold"/>
+                        <Entry Text="{Binding Product.Price}" Keyboard="Numeric"/>
+                    </VerticalStackLayout>
+                </Border>
+                <Border Grid.Column="1" Stroke="Black" StrokeThickness="1" Padding="10" BackgroundColor="White">
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Единица измерения" FontAttributes="Bold"/>
+                        <Picker ItemsSource="{Binding Units}"
+                                SelectedItem="{Binding Product.UnitOfMeasurement}"
+                                Title="Выберите единицу"/>
+                    </VerticalStackLayout>
+                </Border>
+            </Grid>
+
+            <!-- Количество на складе + скидка -->
+            <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
+                <Border Grid.Column="0" Stroke="Black" StrokeThickness="1" Padding="10" BackgroundColor="White">
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Количество на складе" FontAttributes="Bold"/>
+                        <Entry Text="{Binding Product.InWarehouse}" Keyboard="Numeric"/>
+                    </VerticalStackLayout>
+                </Border>
+                <Border Grid.Column="1" Stroke="Black" StrokeThickness="1" Padding="10" BackgroundColor="White">
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Действующая скидка (%)" FontAttributes="Bold"/>
+                        <Entry Text="{Binding Product.Current}" Keyboard="Numeric"/>
+                    </VerticalStackLayout>
+                </Border>   
+            </Grid>
+
+            <!-- ID товара -->
+            <Border IsVisible="{Binding IsEditMode}" Stroke="Black" StrokeThickness="1" Padding="10" BackgroundColor="White">
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="ID товара" FontAttributes="Bold"/>
+                    <Entry Text="{Binding Product.ProductId}" IsReadOnly="True" BackgroundColor="#E0E0E0"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Кнопка сохранить -->
+            <Button Text="Сохранить" Command="{Binding SaveCommand}"
+                    BackgroundColor="#4CAF50" TextColor="White" FontAttributes="Bold"
+                    HeightRequest="50" CornerRadius="5"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

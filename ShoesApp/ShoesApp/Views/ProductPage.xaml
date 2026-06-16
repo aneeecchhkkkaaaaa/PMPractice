@@ -7,26 +7,22 @@
              Title="Магазин обуви"
              Shell.BackButtonBehavior="{BackButtonBehavior IsVisible=False}">
 
-    <!-- Заголовок -->
     <Shell.TitleView>
         <Grid ColumnDefinitions="Auto, *, Auto, Auto" 
               VerticalOptions="Center" 
               Margin="0, 0, 15, 0">
-
             <Label Grid.Column="0"
                    Text="Магазин обуви"
                    FontSize="16"
                    FontAttributes="Bold"
                    VerticalOptions="Center"
                    TextColor="Black"/>
-
             <Label Grid.Column="2"
                    Text="{Binding UserFIO}"
                    FontSize="14"
                    VerticalOptions="Center"
                    TextColor="#ADD8E6"
                    Margin="0, 0, 20, 0"/>
-
             <Button Grid.Column="3"
                     Text="Выйти"
                     Command="{Binding LogoutCommand}"
@@ -40,7 +36,6 @@
         </Grid>
     </Shell.TitleView>
 
-    <!-- Основной контент страницы -->
     <Grid RowDefinitions="Auto, Auto, *" 
           ColumnDefinitions="*" 
           BackgroundColor="#F5F5F5"
@@ -64,46 +59,66 @@
                        Margin="5,0"/>
         </Border>
 
-        <!-- Кнопки сортировки -->
+        <!-- Фильтр и сортировка -->
         <VerticalStackLayout Grid.Row="1"
-                     Spacing="5"
-                     Margin="0,5,0,10"
+                             Spacing="5"
+                             Margin="0,5,0,10"
                              IsVisible="{Binding SearchVisible}">
-            <Label Text="Фильтр по поставщику:" 
-                   FontAttributes="Bold" 
-                   TextColor="#333333" 
-                   Margin="0,10,0,5"/>
+
+            <Grid ColumnDefinitions="*, Auto">
+                <Label Grid.Column="0"
+                       Text="Фильтр по поставщику:" 
+                       FontAttributes="Bold" 
+                       TextColor="#333333" 
+                       VerticalOptions="Center"/>
+                <Button Grid.Column="1"
+                        Text="Добавить товар"
+                        Command="{Binding AddProductCommand}"
+                        IsVisible="{Binding IsAdministrator}"
+                        BackgroundColor="#4CAF50"
+                        TextColor="White"
+                        FontSize="13"
+                        HorizontalOptions="End"
+                        VerticalOptions="Center"
+                        WidthRequest="120"
+                        HeightRequest="35"/>
+            </Grid>
+
             <Picker ItemsSource="{Binding Suppliers}" 
                     SelectedItem="{Binding SelectedSupplier}"
                     ItemDisplayBinding="{Binding SupplierName}"
                     HorizontalOptions="Fill"
                     BackgroundColor="White"
                     Title="Выберите поставщика"/>
-            <Label Text="Сортировка цен:" 
+
+            <HorizontalStackLayout Spacing="20" VerticalOptions="Center">
+                <Label Text="Сортировка цен:" 
                        FontAttributes="Bold" 
-                       TextColor="#333333" />
-            <HorizontalStackLayout Spacing="20">
+                       TextColor="#333333" 
+                       VerticalOptions="Center"/>
                 <RadioButton Content="По возрастанию" 
-                     IsChecked="{Binding IsSortAsc}" 
-                     GroupName="SortGroup" 
-                     TextColor="#333333">
+                             IsChecked="{Binding IsSortAsc}" 
+                             GroupName="SortGroup" 
+                             TextColor="#333333"
+                             VerticalOptions="Center">
                     <RadioButton.Triggers>
                         <DataTrigger TargetType="RadioButton"
-                             Binding="{Binding IsSortAsc}"
-                             Value="True">
+                                     Binding="{Binding IsSortAsc}"
+                                     Value="True">
                             <Setter Property="TextColor" Value="#4CAF50"/>
                             <Setter Property="FontAttributes" Value="Bold"/>
                         </DataTrigger>
                     </RadioButton.Triggers>
                 </RadioButton>
                 <RadioButton Content="По убыванию" 
-                     IsChecked="{Binding IsSortDesc}" 
-                     GroupName="SortGroup" 
-                     TextColor="#333333">
+                             IsChecked="{Binding IsSortDesc}" 
+                             GroupName="SortGroup" 
+                             TextColor="#333333"
+                             VerticalOptions="Center">
                     <RadioButton.Triggers>
                         <DataTrigger TargetType="RadioButton"
-                             Binding="{Binding IsSortDesc}"
-                             Value="True">
+                                     Binding="{Binding IsSortDesc}"
+                                     Value="True">
                             <Setter Property="TextColor" Value="#4CAF50"/>
                             <Setter Property="FontAttributes" Value="Bold"/>
                         </DataTrigger>
@@ -135,7 +150,7 @@
                             </DataTrigger>
                         </Border.Triggers>
 
-                        <Grid ColumnDefinitions="140, *, 110">
+                        <Grid ColumnDefinitions="140, *, 125">
                             <Border Grid.Column="0" 
                                     Stroke="Black" 
                                     StrokeThickness="1" 
@@ -198,7 +213,7 @@
                                     StrokeThickness="1" 
                                     Margin="2" 
                                     BackgroundColor="White">
-                                <Grid RowDefinitions="*, Auto">
+                                <Grid RowDefinitions="*, Auto, Auto">
                                     <VerticalStackLayout Grid.Row="0" 
                                                          VerticalOptions="Center" 
                                                          HorizontalOptions="Center" 
@@ -212,20 +227,36 @@
                                                FontAttributes="Bold" 
                                                HorizontalOptions="Center"/>
                                     </VerticalStackLayout>
+
                                     <Button Grid.Row="1"
+                                            Text="Редактировать"
+                                            FontSize="11"
+                                            BackgroundColor="#2196F3"
+                                            TextColor="White"
+                                            FontAttributes="Bold"
+                                            HeightRequest="28"
+                                            CornerRadius="0"
+                                            Margin="2,2,2,2"
+                                            IsVisible="{Binding Source={RelativeSource AncestorType={x:Type vm:ProductViewModel}}, Path=IsAdministrator}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProductViewModel}}, Path=EditProductCommand}"
+                                            CommandParameter="{Binding OriginalProduct}"/>
+
+                                    <Button Grid.Row="2"
                                             Text="Удалить"
                                             FontSize="11"
                                             BackgroundColor="#FF4D4D"
                                             TextColor="White"
                                             FontAttributes="Bold"
-                                            HeightRequest="32"
+                                            HeightRequest="28"
                                             CornerRadius="0"
                                             Margin="2,2,2,4"
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProductViewModel}}, Path=DeleteProductCommand}"/>
+                                            IsVisible="{Binding Source={RelativeSource AncestorType={x:Type vm:ProductViewModel}}, Path=IsAdministrator}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProductViewModel}}, Path=DeleteProductCommand}"
+                                            CommandParameter="{Binding OriginalProduct}"/>
                                 </Grid>
                             </Border>
                         </Grid>
-                    </Border>
+                    </Border>   
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>

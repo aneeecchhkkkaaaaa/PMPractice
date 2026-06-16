@@ -1,10 +1,11 @@
-﻿using System;
+﻿using ShoesApp.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
-using ShoesApp.Models;
 
 namespace ShoesApp.Infrastructures
 {
@@ -66,6 +67,103 @@ namespace ShoesApp.Infrastructures
             catch
             {
                 return new();
+            }
+        }
+        public async Task<List<Manufacturer>> GetManufacturers() // Получение списка производителей
+        {
+            var response = await _client.GetAsync(url + "/api/Manufacturers");
+            if (response.IsSuccessStatusCode)
+                return await response.Content.ReadFromJsonAsync<List<Manufacturer>>() ?? new();
+            return new();
+        }
+        public async Task<bool> CreateProductAsync(Product product, FileResult? selectedImage) // Создание товара с изображением
+        {
+            try
+            {
+                using var content = new MultipartFormDataContent();
+                var productJson = JsonSerializer.Serialize(product, new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                    DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+                });
+                content.Add(new StringContent(productJson, Encoding.UTF8, "application/json"), "product");
+
+                if (selectedImage != null)
+                {
+                    var stream = await selectedImage.OpenReadAsync();
+                    var streamContent = new StreamContent(stream);
+                    streamContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(selectedImage.ContentType);
+                    content.Add(streamContent, "image", selectedImage.FileName);
+                }
+
+                var response = await _client.PostAsync(url + "/api/Products", content);
+                if (response.IsSuccessStatusCode)
+                    return true;
+                else
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    System.Diagnostics.Debug.WriteLine($"CreateProduct error: {response.StatusCode} - {error}");
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"CreateProduct exception: {ex.Message}");
+                return false;
+            }
+        }
+        public async Task<bool> UpdateProductAsync(Product product, FileResult? selectedImage) // Обновление товара
+        {
+            try
+            {
+                using var content = new MultipartFormDataContent();
+                var productJson = JsonSerializer.Serialize(product, new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                    DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+                });
+                content.Add(new StringContent(productJson, Encoding.UTF8, "application/json"), "product");
+
+                if (selectedImage != null)
+                {
+                    var stream = await selectedImage.OpenReadAsync();
+                    var streamContent = new StreamContent(stream);
+                    streamContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(selectedImage.ContentType);
+                    content.Add(streamContent, "image", selectedImage.FileName);
+                }
+
+                var response = await _client.PutAsync($"{url}/api/Products/{product.ProductId}", content);
+                if (response.IsSuccessStatusCode)
+                    return true;
+                else
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    System.Diagnostics.Debug.WriteLine($"UpdateProduct error: {response.StatusCode} - {error}");
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"UpdateProduct exception: {ex.Message}");
+                return false;
+            }
+        }
+        public async Task<(bool success, string error)> DeleteProductAsync(string productId) // Удаление товара
+        {
+            try
+            {
+                var response = await _client.DeleteAsync($"{url}/api/Products/{productId}");
+                if (response.IsSuccessStatusCode)
+                    return (true, string.Empty);
+                else
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    return (false, error);
+                }
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
             }
         }
     }

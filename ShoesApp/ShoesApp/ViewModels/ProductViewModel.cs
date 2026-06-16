@@ -4,6 +4,8 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using ShoesApp.Infrastructures;
@@ -14,14 +16,12 @@ namespace ShoesApp.ViewModels
     [QueryProperty(nameof(ReceivedUser), "CurrentUser")]
     internal class ProductViewModel : INotifyPropertyChanged
     {
-        // Инициализация полей
-        private readonly DbService _dbService = new DbService();
+        private readonly DbService _dbService = new();
         private User? _receivedUser;
         private string _userFIO = "Гость";
         private string _searchTerm = string.Empty;
         private bool _isSortAsc;
         private bool _isSortDesc;
-        //private string _userRole = "Гость";  // На возможный функционал
         private bool _isMeneger = false;
         private bool _isAdministrator = false;
         private int? _selectedSupplierId;
@@ -29,7 +29,18 @@ namespace ShoesApp.ViewModels
         private CancellationTokenSource _searchCts;
         private Supplier _selectedSupplier;
 
+        public ProductViewModel()
+        {
+            LogoutCommand = new Command(OnLogout);
+            AddProductCommand = new Command(OnAddProduct);
+            EditProductCommand = new Command<Product>(OnEditProduct);
+            DeleteProductCommand = new Command<Product>(async (product) => await OnDeleteProduct(product));
 
+            _ = LoadProductsAsync();
+            LoadSuppliersAsync();
+        }
+
+        // Свойства для привязки
         public Supplier SelectedSupplier
         {
             get => _selectedSupplier;
@@ -39,21 +50,11 @@ namespace ShoesApp.ViewModels
                 {
                     _selectedSupplier = value;
                     OnPropertyChanged();
-                    // Вычисляем Id для передачи в API: если выбран "Все поставщики" (Id == 0) → null
                     int? supplierForApi = (value?.SupplierId == 0) ? null : value?.SupplierId;
                     SelectedSupplierId = supplierForApi;
                     _ = LoadProductsAsync();
                 }
             }
-        }
-        private async Task LoadSuppliersAsync()
-        {
-            var list = await _dbService.GetSuppliers();
-            Suppliers.Clear();
-            Suppliers.Add(new Supplier { SupplierId = 0, SupplierName = "Все поставщики" });
-            foreach (var s in list)
-                Suppliers.Add(s);
-            SelectedSupplier = Suppliers.First(); // По умолчанию "Все поставщики"
         }
 
         public ObservableCollection<Supplier> Suppliers
@@ -95,11 +96,6 @@ namespace ShoesApp.ViewModels
             }
         }
 
-        public bool SearchVisible
-        {
-            get => (_isMeneger || _isAdministrator);
-        }
-
         public bool IsSortDesc
         {
             get => _isSortDesc;
@@ -114,10 +110,11 @@ namespace ShoesApp.ViewModels
                         OnPropertyChanged(nameof(IsSortAsc));
                     }
                     OnPropertyChanged();
-                    LoadProductsAsync(); 
+                    LoadProductsAsync();
                 }
             }
         }
+
         public string SearchTerm
         {
             get => _searchTerm;
@@ -138,7 +135,6 @@ namespace ShoesApp.ViewModels
             }
         }
 
-        // Установка данных пользователя
         public User ReceivedUser
         {
             get => _receivedUser;
@@ -146,7 +142,6 @@ namespace ShoesApp.ViewModels
             {
                 _receivedUser = value;
                 UserFIO = $"{_receivedUser?.LastName} {_receivedUser?.FirstName} {_receivedUser?.Patronymic}" ?? "Гость";
-                //_userRole = _receivedUser.Role?.RolesName; // На возможный функционал
                 if (_receivedUser != null)
                 {
                     switch (_receivedUser.RoleId)
@@ -156,36 +151,40 @@ namespace ShoesApp.ViewModels
                         default: _isAdministrator = false; _isMeneger = false; break;
                     }
                     OnPropertyChanged();
+                    OnPropertyChanged(nameof(IsAdministrator));
                 }
                 OnPropertyChanged(nameof(SearchVisible));
             }
-        }  
+        }
 
-        // Привязка для имени пользователя в TitleView
         public string UserFIO
         {
             get => _userFIO;
             set { _userFIO = value; OnPropertyChanged(); }
         }
 
-        // Коллекция оберток для CollectionView (верстка будет брать данные отсюда)
-        public ObservableCollection<ProductItemViewModel> Products { get; set; } = new ObservableCollection<ProductItemViewModel>();
+        public bool SearchVisible => (_isMeneger || _isAdministrator);
+        public bool IsAdministrator => _isAdministrator;
+
+        public ObservableCollection<ProductItemViewModel> Products { get; set; } = new();
 
         // Команды
         public ICommand LogoutCommand { get; }
+        public ICommand AddProductCommand { get; }
+        public ICommand EditProductCommand { get; }
         public ICommand DeleteProductCommand { get; }
 
-        public ProductViewModel()
+        private async Task LoadSuppliersAsync()
         {
-            LogoutCommand = new Command(OnLogout);
-            DeleteProductCommand = new Command<ProductItemViewModel>(async (item) => await OnDeleteProduct(item));
-
-            // Загрузка данных при старте
-            _ = LoadProductsAsync();
-            LoadSuppliersAsync();
+            var list = await _dbService.GetSuppliers();
+            Suppliers.Clear();
+            Suppliers.Add(new Supplier { SupplierId = 0, SupplierName = "Все поставщики" });
+            foreach (var s in list)
+                Suppliers.Add(s);
+            SelectedSupplier = Suppliers.First();
         }
 
-        private async Task LoadProductsAsync()
+        public async Task LoadProductsAsync()
         {
             try
             {
@@ -204,26 +203,40 @@ namespace ShoesApp.ViewModels
             }
         }
 
-
-        private async Task OnDeleteProduct(ProductItemViewModel item)
+        private void OnAddProduct()
         {
-            if (item == null) return;
+            if (IsAdministrator)
+                Shell.Current.GoToAsync(nameof(ProductEditPage));
+        }
 
-            bool confirm = await Shell.Current.CurrentPage.DisplayAlert(
-                "Удаление",
-                $"Вы уверены, что хотите удалить {item.Title}?",
-                "Да", "Нет");
+        private void OnEditProduct(Product product)
+        {
+            if (product == null || !IsAdministrator) return;
+            var navigationParam = new Dictionary<string, object>
+            {
+                { "SelectedProduct", JsonSerializer.Serialize(product) }
+            };
+            Shell.Current.GoToAsync(nameof(ProductEditPage), navigationParam);
+        }
 
+        private async Task OnDeleteProduct(Product product)
+        {
+            if (product == null || !IsAdministrator) return;
+
+            bool confirm = await Shell.Current.CurrentPage.DisplayAlert("Удаление",
+                $"Вы уверены, что хотите удалить {product.ProductName}?", "Да", "Нет");
             if (confirm)
             {
-                try
+                var (success, error) = await _dbService.DeleteProductAsync(product.ProductId);
+                if (success)
                 {
-
-                    Products.Remove(item);
+                    var item = Products.FirstOrDefault(p => p.OriginalProduct.ProductId == product.ProductId);
+                    if (item != null)
+                        Products.Remove(item);
                 }
-                catch (Exception ex)
+                else
                 {
-                    await Shell.Current.CurrentPage.DisplayAlert("Ошибка", $"Не удалось удалить: {ex.Message}", "OK");
+                    await Shell.Current.CurrentPage.DisplayAlert("Ошибка", error, "OK");
                 }
             }
         }
@@ -242,7 +255,6 @@ namespace ShoesApp.ViewModels
     {
         public Product OriginalProduct { get; }
 
-        // Маппинг базовых свойств под имена из XAML
         public string Title => OriginalProduct.ProductName;
         public string Description => OriginalProduct.Description;
         public decimal Price => OriginalProduct.Price;
@@ -255,7 +267,6 @@ namespace ShoesApp.ViewModels
             {
                 if (string.IsNullOrEmpty(OriginalProduct.Photo))
                     return ImageSource.FromFile("picture.png");
-
                 string fullUrl = OriginalProduct.Photo;
                 try
                 {
@@ -268,7 +279,6 @@ namespace ShoesApp.ViewModels
             }
         }
 
-        // Маппинг связанных сущностей
         public CategoryWrapper Category => new CategoryWrapper { CategoryName = OriginalProduct.Category };
         public Manufacturer Manufacturer => OriginalProduct.Manufacturer;
         public SupplierWrapper Supplier => new SupplierWrapper { Supliername = OriginalProduct.Supplier?.SupplierName ?? "Не указан" };
@@ -276,8 +286,6 @@ namespace ShoesApp.ViewModels
         public bool HasDiscount => Discount > 0;
         public bool HasNoDiscount => Discount == 0;
         public decimal PriceWithDiscount => HasDiscount ? Price * (1 - (decimal)Discount / 100) : Price;
-
-        // Свойства для триггеров (DataTrigger) в XAML
         public bool IsOutOfStock => StockQuantity == 0;
         public bool IsHighDiscount => Discount >= 15;
 
@@ -287,7 +295,6 @@ namespace ShoesApp.ViewModels
         }
     }
 
-    // Вспомогательные заглушки-обертки для совпадения с путями в XAML (Category.CategoryName и Supplier.Supliername)
     internal class CategoryWrapper { public string CategoryName { get; set; } }
     internal class SupplierWrapper { public string Supliername { get; set; } }
 }

@@ -31,6 +31,9 @@ namespace ShoesApi
             }
 
             app.UseStaticFiles();
+            var imagesFolder = Path.Combine(builder.Environment.ContentRootPath, "Images");
+            if (!Directory.Exists(imagesFolder))
+                Directory.CreateDirectory(imagesFolder);
 
             app.UseHttpsRedirection();
 
