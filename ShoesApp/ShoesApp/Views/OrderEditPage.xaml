@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ShoesApp.OrderEditPage"
+             Title="{Binding Title}"
+             BackgroundColor="#F5F5F5"
+             Shell.BackButtonBehavior="{BackButtonBehavior IsVisible=True}">
+
+	<ScrollView>
+		<VerticalStackLayout Spacing="15" Padding="20">
+			<VerticalStackLayout IsVisible="{Binding IsEditMode}" Spacing="5">
+				<Label Text="Артикул заказа" FontAttributes="Bold"/>
+				<Entry Text="{Binding Order.OrderId}" IsReadOnly="True" BackgroundColor="#E0E0E0"/>
+			</VerticalStackLayout>
+
+			<VerticalStackLayout Spacing="5">
+				<Label Text="Статус заказа" FontAttributes="Bold"/>
+				<Picker ItemsSource="{Binding Statuses}"
+                        ItemDisplayBinding="{Binding OrderStatusName}"
+                        SelectedItem="{Binding SelectedStatus}"
+                        Title="Выберите статус"/>
+			</VerticalStackLayout>
+
+			<VerticalStackLayout Spacing="5">
+				<Label Text="Адрес пункта выдачи" FontAttributes="Bold"/>
+				<Picker ItemsSource="{Binding Addresses}"
+                        ItemDisplayBinding="{Binding AddressId}"
+                        SelectedItem="{Binding SelectedAddress}"
+                        Title="Выберите адрес"/>
+			</VerticalStackLayout>
+
+			<VerticalStackLayout Spacing="5">
+				<Label Text="Дата заказа" FontAttributes="Bold"/>
+				<DatePicker Date="{Binding Order.OrderDate, Mode=TwoWay}" Format="dd.MM.yyyy"/>
+			</VerticalStackLayout>
+
+			<VerticalStackLayout Spacing="5">
+				<Label Text="Дата доставки" FontAttributes="Bold"/>
+				<DatePicker Date="{Binding Order.DeliveryDate, Mode=TwoWay}" Format="dd.MM.yyyy"/>
+			</VerticalStackLayout>
+
+			<Button Text="Сохранить"
+                    Command="{Binding SaveCommand}"
+                    BackgroundColor="#4CAF50"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    HeightRequest="50"
+                    CornerRadius="5"/>
+		</VerticalStackLayout>
+	</ScrollView>
+</ContentPage>

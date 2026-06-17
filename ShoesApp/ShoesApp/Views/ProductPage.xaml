@@ -65,23 +65,31 @@
                              Margin="0,5,0,10"
                              IsVisible="{Binding SearchVisible}">
 
+            <!-- Исправленный Grid с двумя кнопками -->
             <Grid ColumnDefinitions="*, Auto">
                 <Label Grid.Column="0"
                        Text="Фильтр по поставщику:" 
                        FontAttributes="Bold" 
                        TextColor="#333333" 
                        VerticalOptions="Center"/>
-                <Button Grid.Column="1"
-                        Text="Добавить товар"
-                        Command="{Binding AddProductCommand}"
-                        IsVisible="{Binding IsAdministrator}"
-                        BackgroundColor="#4CAF50"
-                        TextColor="White"
-                        FontSize="13"
-                        HorizontalOptions="End"
-                        VerticalOptions="Center"
-                        WidthRequest="120"
-                        HeightRequest="35"/>
+                <HorizontalStackLayout Grid.Column="1" Spacing="5">
+                    <Button Text="Добавить товар"
+                            Command="{Binding AddProductCommand}"
+                            IsVisible="{Binding IsAdministrator}"
+                            BackgroundColor="#4CAF50"
+                            TextColor="White"
+                            FontSize="13"
+                            WidthRequest="120"
+                            HeightRequest="35"/>
+                    <Button Text="Заказы"
+                            Command="{Binding OrdersCommand}"
+                            IsVisible="{Binding IsManagerOrAdmin}"
+                            BackgroundColor="#2196F3"
+                            TextColor="White"
+                            FontSize="13"
+                            WidthRequest="100"
+                            HeightRequest="35"/>
+                </HorizontalStackLayout>
             </Grid>
 
             <Picker ItemsSource="{Binding Suppliers}" 
@@ -256,7 +264,7 @@
                                 </Grid>
                             </Border>
                         </Grid>
-                    </Border>   
+                    </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>

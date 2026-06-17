@@ -166,5 +166,77 @@ namespace ShoesApp.Infrastructures
                 return (false, ex.Message);
             }
         }
+        public async Task<List<Order>> GetOrders()
+        {
+            var response = await _client.GetAsync(url + "/api/Orders");
+            if (response.IsSuccessStatusCode)
+                return await response.Content.ReadFromJsonAsync<List<Order>>() ?? new();
+            return new();
+        }
+
+        public async Task<List<Address>> GetAddresses()
+        {
+            var response = await _client.GetAsync(url + "/api/Addresses");
+            if (response.IsSuccessStatusCode)
+                return await response.Content.ReadFromJsonAsync<List<Address>>() ?? new();
+            return new();
+        }
+
+        public async Task<List<OrderStatus>> GetOrderStatuses()
+        {
+            var response = await _client.GetAsync(url + "/api/OrderStatuses");
+            if (response.IsSuccessStatusCode)
+                return await response.Content.ReadFromJsonAsync<List<OrderStatus>>() ?? new();
+            return new();
+        }
+
+        public async Task<bool> CreateOrderAsync(Order order, int userId)
+        {
+            var dto = new OrderCreateDto
+            {
+                OrderDate = order.OrderDate,
+                DeliveryDate = order.DeliveryDate,
+                AddressId = order.AddressId,
+                StatusId = order.StatusId,
+                UserId = userId
+            };
+            var response = await _client.PostAsJsonAsync(url + "/api/Orders", dto);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> UpdateOrderAsync(Order order)
+        {
+            var dto = new OrderUpdateDto
+            {
+                OrderDate = order.OrderDate,
+                DeliveryDate = order.DeliveryDate,
+                AddressId = order.AddressId,
+                StatusId = order.StatusId
+            };
+            var response = await _client.PutAsJsonAsync($"{url}/api/Orders/{order.OrderId}", dto);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> DeleteOrderAsync(int orderId)
+        {
+            var response = await _client.DeleteAsync($"{url}/api/Orders/{orderId}");
+            return response.IsSuccessStatusCode;
+        }
+        public class OrderCreateDto
+        {
+            public DateOnly OrderDate { get; set; }
+            public DateOnly DeliveryDate { get; set; }
+            public int AddressId { get; set; }
+            public int StatusId { get; set; }
+            public int UserId { get; set; }
+        }
+
+        public class OrderUpdateDto
+        {
+            public DateOnly OrderDate { get; set; }
+            public DateOnly DeliveryDate { get; set; }
+            public int AddressId { get; set; }
+            public int StatusId { get; set; }
+        }
     }
 }

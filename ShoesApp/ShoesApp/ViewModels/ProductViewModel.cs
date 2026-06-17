@@ -28,6 +28,8 @@ namespace ShoesApp.ViewModels
         private ObservableCollection<Supplier> _suppliers = new();
         private CancellationTokenSource _searchCts;
         private Supplier _selectedSupplier;
+        public bool IsManagerOrAdmin => _isMeneger || _isAdministrator;
+
 
         public ProductViewModel()
         {
@@ -35,6 +37,7 @@ namespace ShoesApp.ViewModels
             AddProductCommand = new Command(OnAddProduct);
             EditProductCommand = new Command<Product>(OnEditProduct);
             DeleteProductCommand = new Command<Product>(async (product) => await OnDeleteProduct(product));
+            OrdersCommand = new Command(OnOrders);
 
             _ = LoadProductsAsync();
             LoadSuppliersAsync();
@@ -173,6 +176,16 @@ namespace ShoesApp.ViewModels
         public ICommand AddProductCommand { get; }
         public ICommand EditProductCommand { get; }
         public ICommand DeleteProductCommand { get; }
+        public ICommand OrdersCommand { get; }
+
+        private void OnOrders()
+        {
+            var param = new Dictionary<string, object>
+    {
+        { "CurrentUser", ReceivedUser }
+    };
+            Shell.Current.GoToAsync(nameof(OrderListPage), param);
+        }
 
         private async Task LoadSuppliersAsync()
         {
@@ -248,7 +261,7 @@ namespace ShoesApp.ViewModels
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string? name = null) =>
+        internal void OnPropertyChanged([CallerMemberName] string? name = null) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
     internal class ProductItemViewModel

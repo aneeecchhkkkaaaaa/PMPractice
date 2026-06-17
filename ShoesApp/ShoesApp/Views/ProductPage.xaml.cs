@@ -14,5 +14,6 @@ public partial class ProductPage : ContentPage
     {
         base.OnAppearing();
         (BindingContext as ProductViewModel)?.LoadProductsAsync();
+        (BindingContext as ProductViewModel)?.OnPropertyChanged(nameof(ProductViewModel.IsManagerOrAdmin));
     }
 }
