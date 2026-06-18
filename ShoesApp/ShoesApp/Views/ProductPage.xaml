@@ -84,7 +84,7 @@
                     <Button Text="Заказы"
                             Command="{Binding OrdersCommand}"
                             IsVisible="{Binding IsManagerOrAdmin}"
-                            BackgroundColor="#2196F3"
+                            BackgroundColor="#005924"
                             TextColor="White"
                             FontSize="13"
                             WidthRequest="100"

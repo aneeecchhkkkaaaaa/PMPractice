@@ -29,17 +29,17 @@
                         Title="Выберите адрес"/>
 			</VerticalStackLayout>
 
-			<VerticalStackLayout Spacing="5">
-				<Label Text="Дата заказа" FontAttributes="Bold"/>
-				<DatePicker Date="{Binding Order.OrderDate, Mode=TwoWay}" Format="dd.MM.yyyy"/>
-			</VerticalStackLayout>
+            <VerticalStackLayout Spacing="5">
+                <Label Text="Дата заказа" FontAttributes="Bold"/>
+                <DatePicker Date="{Binding OrderDateBinding, Mode=TwoWay}" Format="dd.MM.yyyy"/>
+            </VerticalStackLayout>
 
-			<VerticalStackLayout Spacing="5">
-				<Label Text="Дата доставки" FontAttributes="Bold"/>
-				<DatePicker Date="{Binding Order.DeliveryDate, Mode=TwoWay}" Format="dd.MM.yyyy"/>
-			</VerticalStackLayout>
+            <VerticalStackLayout Spacing="5">
+                <Label Text="Дата доставки" FontAttributes="Bold"/>
+                <DatePicker Date="{Binding DeliveryDateBinding, Mode=TwoWay}" Format="dd.MM.yyyy"/>
+            </VerticalStackLayout>
 
-			<Button Text="Сохранить"
+            <Button Text="Сохранить"
                     Command="{Binding SaveCommand}"
                     BackgroundColor="#4CAF50"
                     TextColor="White"

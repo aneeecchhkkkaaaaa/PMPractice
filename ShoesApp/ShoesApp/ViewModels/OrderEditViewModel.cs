@@ -21,6 +21,36 @@ namespace ShoesApp.ViewModels
         private Address _selectedAddress;
         private OrderStatus _selectedStatus;
         private bool _isLoaded = false;
+        private DateTime _orderDateBinding;
+        private DateTime _deliveryDateBinding;
+
+        public DateTime OrderDateBinding
+        {
+            get => _orderDateBinding;
+            set
+            {
+                if (_orderDateBinding != value)
+                {
+                    _orderDateBinding = value;
+                    Order.OrderDate = DateOnly.FromDateTime(value);
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public DateTime DeliveryDateBinding
+        {
+            get => _deliveryDateBinding;
+            set
+            {
+                if (_deliveryDateBinding != value)
+                {
+                    _deliveryDateBinding = value;
+                    Order.DeliveryDate = DateOnly.FromDateTime(value);
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         public Order Order
         {
@@ -112,16 +142,35 @@ namespace ShoesApp.ViewModels
             {
                 SelectedAddress = Addresses.FirstOrDefault(a => a.AddressId == Order.AddressId);
                 SelectedStatus = Statuses.FirstOrDefault(s => s.OrderStatusId == Order.StatusId);
+                OrderDateBinding = Order.OrderDate.ToDateTime(TimeOnly.MinValue);
+                DeliveryDateBinding = Order.DeliveryDate.ToDateTime(TimeOnly.MinValue);
             }
             else
             {
                 SelectedAddress = Addresses.First();
                 SelectedStatus = Statuses.First();
-                // Убедимся, что даты есть
-                if (Order.OrderDate == default(DateOnly))
-                    Order.OrderDate = DateOnly.FromDateTime(DateTime.Today);
-                if (Order.DeliveryDate == default(DateOnly))
-                    Order.DeliveryDate = DateOnly.FromDateTime(DateTime.Today.AddDays(7));
+
+                if (Order.OrderDate == default)
+                {
+                    var today = DateTime.Today;
+                    Order.OrderDate = DateOnly.FromDateTime(today);
+                    OrderDateBinding = today;
+                }
+                else
+                {
+                    OrderDateBinding = Order.OrderDate.ToDateTime(TimeOnly.MinValue);
+                }
+
+                if (Order.DeliveryDate == default)
+                {
+                    var delivery = DateTime.Today.AddDays(7);
+                    Order.DeliveryDate = DateOnly.FromDateTime(delivery);
+                    DeliveryDateBinding = delivery;
+                }
+                else
+                {
+                    DeliveryDateBinding = Order.DeliveryDate.ToDateTime(TimeOnly.MinValue);
+                }
             }
         }
 

@@ -182,7 +182,6 @@ namespace ShoesApi.Controllers
             if (product == null)
                 return NotFound();
 
-            // Удаляем файл изображения
             if (!string.IsNullOrEmpty(product.Photo))
             {
                 string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", product.Photo);
